@@ -9,7 +9,7 @@ $(document).ready(function(){
 	function sendenChatctoc(){
 		// Eingabefelder auslesen
 		//var name = $('#name').val();
-		var name = myID;
+		var name = "hallo";
 		var text = $('#chattestctoc').val();
 		// Socket senden
 		socket.emit('chatctoc', {id: "1", name: name, text: text });
