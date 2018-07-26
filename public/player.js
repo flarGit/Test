@@ -3,7 +3,7 @@ $(document).ready(function(){
 
 	// WebSocket
 	var socket = io.connect();
-	
+	document.getElementById("javaskriptfehler").style.display == "none"
 	
 //20180717 Nachricht von user to user
 	function sendenChatctoc(){

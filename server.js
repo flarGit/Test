@@ -43,7 +43,7 @@ io.sockets.on('connection', function (socket) {
 	//Chat from C to C
 	socket.on('chatctoc', function (data) {
 		// und an mich selbst, wieder zurück das ich ihn auch sehe
-		io.sockets.emit('awchatctoc', { zeit: new Date(), text: data.text,name: data.name, blinken: false});
+		io.sockets.emit('awchatctoc', { zeit: new Date(), text: data.text,name: data.name});
 	});
 	
 
@@ -52,4 +52,4 @@ io.sockets.on('connection', function (socket) {
 
 
 // Portnummer in die Konsole schreiben
-console.log('Der Server läuft /');
+console.log('Der Server läuft nun');

@@ -71,18 +71,17 @@
 		<input id="sendenctockey" name="sendenctockey" type="button" class="btn" value="senden" />
 
 
-<input type="text" name="formsubmitfix" style="display: none;" /><input type="text" name="formsubmitfix2" style="display: none;" />
 </form>
 		<form id="loadingsite" name="loadingsite" method="post">
 			Please Wait - Loading progress
 		</form>
-		<form id="javaskriptfehler" name="javaskriptfehler" style="display: none;" method="post">
+		<form id="javaskriptfehler" name="javaskriptfehler" method="post">
 			Es gibt ein fehler im JavaSkript, für mehr Informationen wechseln sie in den Entwicklermodus ihres Browser.<p>Chrome<br>From the menu, select tools.<br>From tools, choose developer tools.<br>Finally, select Console.<br>shortcut ctrl+shift+j</p><p>Firefox<br>From the menu, select developer tools<br>shortcut ctrl+shift+k</p>
 		</form>
 		<script>
 			function load() {
 				document.getElementById('loadingsite').style.display = "none";
-				document.getElementById('javaskriptfehler').style.display = "";
+				document.getElementById('javaskriptfehler').style.display = "none";
 			}
 			window.onload = load;
 		</script>
