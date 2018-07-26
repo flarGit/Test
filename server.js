@@ -1,24 +1,14 @@
 var debug = true;
 var fs = require('fs');
-var conf = require('./config.json');
-if(conf.https){
-	var express = require('express')
-	,   app = express()
-	,   server = require('https').createServer({
-      key: fs.readFileSync('Zertifikat/schluessel.key'),
-      cert: fs.readFileSync('Zertifikat/zertifikat.pem')
-    }, app)
-	,   io = require('socket.io').listen(server);   
-}else{
 	var express = require('express')
 	,   app = express()
 	,   server = require('http').createServer(app)
 	,   io = require('socket.io').listen(server)
-}
+
 
 // Webserver
 // auf den Port x schalten
-server.listen(conf.port);
+server.listen(8080);
 
 app.configure(function(){
 	// statische Dateien ausliefern
@@ -52,41 +42,11 @@ io.sockets.on('connection', function (socket) {
 	
 	//Chat from C to C
 	socket.on('chatctoc', function (data) {
-		//speichern des chats
-		socketidIdAdmin.forEach(function(value, key) {
-				var tempid = socketidId.get(socket.id);
-				idChatVerlauf.set(tempid,"ID"+tempid+ ": " + data.text + idChatVerlauf.get(tempid));
-		});
 		// und an mich selbst, wieder zurück das ich ihn auch sehe
 		io.sockets.emit('awchatctoc', { zeit: new Date(), text: data.text,name: data.name, blinken: false});
 	});
 	
 
-	
-	
-	//test für das beenden des Socket
-	socket.on('error', function(exception) {
-	  console.log('Cool da kommt was schau mal nach Ralf SOCKET ERROR');
-	})
-
-	socket.on('close', function(exception) {
-	  console.log('Cool da kommt was schau mal nach Ralf SOCKET CLOSED');
-	})
-	
-
-	
-	function saveFile(filename, savedata){
-		return new Promise(function(resolve, reject){
-			var erg = "";
-			savedata.forEach(function(value, key) {
-				erg+= key + ":::" + value + "\r\n";
-			});			
-			fs.writeFile(__dirname + '/backup/'+filename, erg, function (err) {
-			if (err) 
-				return console.log(err);
-			});
-		});
-	}
 	
 });
 
