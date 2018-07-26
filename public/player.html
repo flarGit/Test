@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>	
+
+<!-- hier wird der HTML Code der GUI gespeichert -->
+
+<!-- anfang-ende GUI code. not change this tag-->
+	<head>
+		<title>Test</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="player.css" />
+		<script src="socket.io/socket.io.js"></script>
+		<script src="jquery.min.js"></script>
+		<script src="player.js"></script>
+	</head>
+	<body>
+				
+		<header>Test</header>
+		<br>
+		<br>
+
+
+<form id="mychat" name="mychat"  method="post">
+
+
+
+		<style>
+		#chatctoc{
+			position: relative;
+			background-color: WhiteSmoke;
+			border: 1px solid; 
+			max-height:700px;
+			min-height:700px;
+			max-width:820px;
+			min-width:820px;
+			overflow: scroll;
+			overflow-x: hidden;
+		}
+		#chatctocin{
+			position: relative;
+			float: right;
+			background-color: WhiteSmoke;
+			border: 1px solid;
+			max-height:90px;
+			min-height:90px;
+			max-width:685px;
+			min-width:685px;
+			box-shadow: inset 0 0 0 3000px rgba(255,255,255,0.3);
+			border-radius: 5px 20px 20px 5px;
+			word-wrap: break-word;
+			padding: 5px; 
+			overflow: auto;
+		}
+		</style>
+		<div id="chatctoc" name="chatctoc">
+			<!-- <img id="B1" alt="" height="100" src="B1.jpg" width="100"> -->
+			<!-- <div id="chatctocin" name="chatctocin"> -->
+			<!-- 	Das ist das muster -->
+			<!-- </div> -->
+		</div>	
+		<style>
+		#chattestctoc{
+			border: 2px solid; 
+			padding: 5px;
+			width: 805px;
+			height: 80px;
+			resize: none;
+			font-size:15px;
+		}
+		</style>
+		<textarea id="chattestctoc" name="chattestctoc" rows="4" cols="50" ></textarea>
+		<input id="sendenctockey" name="sendenctockey" type="button" class="btn" value="senden" />
+
+
+<input type="text" name="formsubmitfix" style="display: none;" /><input type="text" name="formsubmitfix2" style="display: none;" />
+</form>
+		<form id="loadingsite" name="loadingsite" method="post">
+			Please Wait - Loading progress
+		</form>
+		<form id="javaskriptfehler" name="javaskriptfehler" style="display: none;" method="post">
+			Es gibt ein fehler im JavaSkript, für mehr Informationen wechseln sie in den Entwicklermodus ihres Browser.<p>Chrome<br>From the menu, select tools.<br>From tools, choose developer tools.<br>Finally, select Console.<br>shortcut ctrl+shift+j</p><p>Firefox<br>From the menu, select developer tools<br>shortcut ctrl+shift+k</p>
+		</form>
+		<script>
+			function load() {
+				document.getElementById('loadingsite').style.display = "none";
+				document.getElementById('javaskriptfehler').style.display = "";
+			}
+			window.onload = load;
+		</script>
+
+	</body>
+</html>
