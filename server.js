@@ -50,7 +50,7 @@ io.sockets.on('connection', function (socket) {
 	
 
 	
-	Chat from C to C
+	//Chat from C to C
 	socket.on('chatctoc', function (data) {
 		//speichern des chats
 		socketidIdAdmin.forEach(function(value, key) {
