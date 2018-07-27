@@ -44,6 +44,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('chatctoc', function (data) {
 		// und an mich selbst, wieder zurück das ich ihn auch sehe
 		io.sockets.emit('awchatctoc', { zeit: new Date(), text: data.text,name: data.name});
+		console.log(new Date() + ' from:'+data.name+' text:'+data.text);
 	});
 	
 
