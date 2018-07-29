@@ -4,6 +4,8 @@
 	"author": "Ralf",
 	"dependencies" : {
 		"express": "3.x",
-		"socket.io": "*"
+		"socket.io": "*",
+		"cookie-session": "*",
+		"body-parser": "*"
 	}
 }
