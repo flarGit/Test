@@ -3,9 +3,16 @@ $(document).ready(function(){
 
 	// WebSocket
 	var socket = io.connect();
+	socket.on('connect', function () {
+		var myName = location.search.split('?id=')[1]
+		socket.emit('join', {name:myName});
+	});
+	
 	window.onload = function () {
 		document.getElementById("javaskriptfehler").style.display = "none"
 		document.getElementById("loadingsite").style.display = "none"
+		document.getElementById("myName").style.display = "none"
+		document.getElementById("mychat").style.display = ""
 	}
 //20180717 Nachricht von user to user
 	function sendenChatctoc(){
