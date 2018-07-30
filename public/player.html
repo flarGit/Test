@@ -16,10 +16,21 @@
 				
 		<header>Test</header>
 		<br>
-		<br>
 
+<form id="wait" name="wait" style="display: none;" method="post">		
+	<span id="waitme" name="waitme" ></span>
+	<br>Sind sie bereit?  
+	<input id="waitbereit" name="waitbereit" type="button" class="btn" value="bereit" />
+	<br>
+	<br>
+	<span id="waitother" name="waitither" ></span>
+	<br>
+	<div><font color="#FF0000">Rot</font> = Teilnehmer noch nicht eingelogt</div>
+	<div><font color="#DBA901">Gelb</font> = Teilnehmer noch nicht bereit</div>
+	<div><font color="#00C000">Gruen</font> = Teinnehmer bereit</div>
+</form>	
 
-<form id="myName" name="myName"  method="post">		
+<form id="myName" name="myName" style="display: none;" method="post">		
 	<style>
 	#playerName{
 	position: relative;
