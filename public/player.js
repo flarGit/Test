@@ -19,7 +19,7 @@ $(document).ready(function(){
 		
 	}
 //20180717 Nachricht von user to user
-	function sendenChatctoc(){
+	/*function sendenChatctoc(){
 		// Eingabefelder auslesen
 		var text = $('#chattestctoc').val();
 		// Socket senden
@@ -35,7 +35,26 @@ $(document).ready(function(){
 			'<div id="chatctocname" name="chatctocname">'+ data.name + '</div>' +
 			'<div id="chatctocin" name="chatctocin">'+ data.text + '</div>'
 		);
+	});*/	
+	
+	//20180717 Nachricht von user to user
+	function chatnachrichtsenden(){
+		// Eingabefelder auslesen
+		var text = $('#chattextinput').val();
+		// Socket senden
+		socket.emit('chatnachricht',{name: name, text: text });
+		// Text-Eingabe leeren
+		$('#chattextinput').val('');
+	}
+	socket.on('awchatnachricht', function (data) {
+		var zeit = new Date(data.zeit);
+		$('#chattextform').append(
+			//'<img id="B' + data.name + '" alt="" height="100" src="B'+ data.name +'.jpg" width="100">' +
+			'<div id="chatname" name="chatname">'+ data.name + '</div>' +
+			'<div id="chattext" name="chattext">'+ data.text + '</div>'
+		);
 	});	
+	
 	
 	socket.on('waitstart', function (data) {
 		document.getElementById("wait").style.display = "";
@@ -89,7 +108,7 @@ $(document).ready(function(){
 		socket.emit('joinstatus',{name:name});
 	}
 	// bei einem Klick auf senden
-	$('#sendenctockey').click(sendenChatctoc);
+	$('#chatnachrichtsendenkey').click(chatnachrichtsenden);
 	$('#sendenkeyname').click(sendenkeyname);
 	$('#waitbereit').click(waitbereit);
 

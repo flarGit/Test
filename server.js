@@ -45,6 +45,12 @@ app.post('/login', function (req, res) {
     } else if (user === 'u2' && pw === 'test') {
 		nametoGroup.set(user,"G1");
 		req.session.user = 'u2';
+    } else if (user === 'u3' && pw === 'test') {
+		nametoGroup.set(user,"G2");
+		req.session.user = 'u3';
+    } else if (user === 'u4' && pw === 'test') {
+		nametoGroup.set(user,"G2");
+		req.session.user = 'u4';
     }
 	idcheck.set(user,rand(100000,999999))
     res.redirect('/player'+'?id='+user+'?key='+idcheck.get(user));
@@ -102,15 +108,28 @@ io.sockets.on('connection', function (socket) {
     // der Client ist verbunden
 	if (debug) console.log('Verbunden mit '+ socket.id);	
 	
-
-	
-	//Chat from C to C
-	socket.on('chatctoc', function (data) {
+	socket.on('chatnachricht', function (data) {
 		// und an mich selbst, wieder zurück das ich ihn auch sehe
 		var name = getName(connections, socket.id);
-		console.log('Der name ist:' + name);
-		io.sockets.emit('awchatctoc', { zeit: new Date(), text: data.text,name: name});
-		console.log(new Date() + ' from:' + name + ' text:' + data.text);
+		var group = nametoGroup.get(name);
+		var idSocketid = new Map();
+		idSocketid = groupGruen.get(group);
+		if(typeof idSocketid !== "undefined"){
+			idSocketid.forEach(function(value, key) {
+				if(typeof io.sockets.connected[value] === "undefined"){
+					//nicht senden, Player entfernen und Admin melden
+					console.log('\u001b[31m check PlayerID '+ key + ' verloren \u001b[0m');
+					if (debug) console.log("\007");
+					//key wieder freigeben
+					//entfernen der ID über PlayerID
+					if(idSocketid.has(key))idSocketid.delete(key);									
+				}else{
+					io.sockets.connected[key].emit('awchatnachricht', { zeit: new Date(), text: data.text,name: name});
+
+				}
+			});
+		}
+		console.log(new Date() + ' from:' + name + ' group:'+ group +' text:' + data.text);
 	});
 	
 	socket.on('join', function(data) {
@@ -142,13 +161,13 @@ io.sockets.on('connection', function (socket) {
 		var idSocketid = new Map();
 		idSocketid = groupGelb.get(nametoGroup.get(data.name));
 		if(typeof idSocketid !== "undefined"){
-				idSocketid.forEach(function(value, key) {			
+				idSocketid.forEach(function(value, key) {
 					if(typeof io.sockets.connected[value] === "undefined"){
 						//nicht senden, Player entfernen und Admin melden
 						console.log('\u001b[31m check PlayerID '+ key + ' verloren \u001b[0m');
 						if (debug) console.log("\007");
 						//entfernen der ID über PlayerID
-						if(idSocketid.has(key))idSocketid.delete(key);									
+						if(idSocketid.has(key))idSocketid.delete(key);
 					}
 				});
 			gelb = idSocketid.size;
@@ -156,7 +175,7 @@ io.sockets.on('connection', function (socket) {
 		
 		idSocketid = groupGruen.get(nametoGroup.get(data.name));
 		if(typeof idSocketid !== "undefined"){
-			idSocketid.forEach(function(value, key) {			
+			idSocketid.forEach(function(value, key) {
 				if(typeof io.sockets.connected[value] === "undefined"){
 					//nicht senden, Player entfernen und Admin melden
 					console.log('\u001b[31m check PlayerID '+ key + ' verloren \u001b[0m');
@@ -172,7 +191,6 @@ io.sockets.on('connection', function (socket) {
 		if(gruen == groupsize){
 			socket.emit('startchat', {});
 		}else{
-			console.log('gruen '+gruen+'  gelb'+ gelb);
 			socket.emit('rejoinstatus', {gruen: gruen,gelb:gelb,groupsize:groupsize});
 		}
 	});
