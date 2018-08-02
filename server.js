@@ -8,11 +8,10 @@ var groupGruen = new Map();
 var grouptoActive = new Map();		// 0 = start 1=warten 2 = läuft 3 = timeout
 
 var express = require('express');
-var app = express(),
+var app = express();
 
 
 var morgan = require('morgan');
-
 app.use(morgan('combined'))
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
@@ -90,7 +89,19 @@ app.get('/', function (req, res) {
 	if (!db) {
 		initDb(function(err){});
 	}
+	if (db) {
+    var col = db.collection('counts');
+    // Create a document with request IP and current time of request
+    col.insert({ip: req.ip, date: Date.now()});
+    col.count(function(err, count){
+      if (err) {
+        console.log('Error running count. Message:\n'+err);
+      }
+      res.sendfile(__dirname + '/public/login.html');
+    });
+  } else {
     res.sendfile(__dirname + '/public/login.html');
+	}
 });
 
 app.post('/login', function (req, res) {
