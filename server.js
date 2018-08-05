@@ -33,7 +33,7 @@ function checkAuth(req, res, next) {
 }
 
 app.get('/', function (req, res) {
-	console.log('Anfrage:'+Date.now()+'   '+ req.ip);
+	console.log('Anfrage:'+new Date()+'   '+ req.ip);
     res.sendfile(__dirname + '/public/login.html');
 });
 
