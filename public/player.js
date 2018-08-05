@@ -50,9 +50,12 @@ $(document).ready(function(){
 		var zeit = new Date(data.zeit);
 		$('#chattextform').append(
 			//'<img id="B' + data.name + '" alt="" height="100" src="B'+ data.name +'.jpg" width="100">' +
-			'<div id="chatname" name="chatname">'+ data.name + '</div>' +
-			'<div id="chattext" name="chattext">'+ data.text + '</div>'
+			'<div id="chattext" name="chattext">'+data.name+':<br>'+ data.text + '</div>'
 		);
+		//scroll down
+		if(document.getElementById("autoscroll").checked){
+			document.getElementById("chattextform").scrollTop = 10000;
+		}
 	});	
 	
 	

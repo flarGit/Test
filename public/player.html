@@ -82,14 +82,14 @@
 			background-color: WhiteSmoke;
 			border: 1px solid;
 			max-height:90px;
-			min-height:90px;
-			max-width:685px;
-			min-width:685px;
+			//max-width:790px;
+			min-width:790px;
 			box-shadow: inset 0 0 0 3000px rgba(255,255,255,0.3);
-			border-radius: 5px 20px 20px 5px;
+			border-radius: 15px 15px 15px 15px;
 			word-wrap: break-word;
 			padding: 5px; 
 			overflow: auto;
+			margin: 0.1%;
 		}
 		#chatname{
 			position: relative;
@@ -119,14 +119,24 @@
 			border: 2px solid; 
 			padding: 5px;
 			width: 805px;
-			height: 80px;
+			height: 60px;
 			resize: none;
 			font-size:15px;
 		}
 		</style>
 		<textarea id="chattextinput" name="chattextinput" rows="4" cols="50" ></textarea>
+		<script>
+			var input = document.getElementById("chattextinput");
+			input.addEventListener("keyup", function(event) {
+				event.preventDefault();
+				if (event.keyCode === 13) {
+					document.getElementById("chatnachrichtsendenkey").click();
+				}
+			});
+		</script>
+		<br>
 		<input id="chatnachrichtsendenkey" name="chatnachrichtsendenkey" type="button" class="btn" value="senden" />
-
+		<input type="checkbox" id="autoscroll" name="autoscroll" value="autoscroll" checked> autoscroll On/Off<br>
 
 </form>
 		<form id="loadingsite" name="loadingsite" method="post">
