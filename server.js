@@ -107,7 +107,7 @@ function getName (connections, socket) {
 
 io.sockets.on('connection', function (socket) {
     // der Client ist verbunden
-	if (debug) console.log('Verbunden mit '+ socket.id);	
+	if (debug) console.log('Verbunden mit '+ socket.id);
 	
 	socket.on('chatnachricht', function (data) {
 		// und an mich selbst, wieder zurück das ich ihn auch sehe
@@ -123,7 +123,7 @@ io.sockets.on('connection', function (socket) {
 					if (debug) console.log("\007");
 					//key wieder freigeben
 					//entfernen der ID über PlayerID
-					if(idSocketid.has(key))idSocketid.delete(key);									
+					if(idSocketid.has(key))idSocketid.delete(key);
 				}else{
 					io.sockets.connected[key].emit('awchatnachricht', { zeit: new Date(), text: data.text,name: name});
 
@@ -184,15 +184,31 @@ io.sockets.on('connection', function (socket) {
 					//key wieder freigeben
 							
 					//entfernen der ID über PlayerID
-					if(idSocketid.has(key))idSocketid.delete(key);									
+					if(idSocketid.has(key))idSocketid.delete(key);
 				}
 			});
 			gruen = idSocketid.size;
 		}
 		if(gruen == groupsize){
-			//alle starten 
-//muss noch geändert werden!!! das alle das gleich bekommen
-			socket.emit('startchat', {});
+			//alle starten gleichzeitig und prüfen ob sie noch da sind
+			console.log('Die group '+ nametoGroup.get(data.name) + ' startet jetzt');
+			var group = nametoGroup.get(data.name);
+			var idSocketid = new Map();
+			idSocketid = groupGruen.get(group);
+			if(typeof idSocketid !== "undefined"){
+				idSocketid.forEach(function(value, key) {
+					if(typeof io.sockets.connected[value] === "undefined"){
+						//nicht senden, Player entfernen und Admin melden
+						console.log('\u001b[31m check PlayerID '+ key + ' verloren \u001b[0m');
+						if (debug) console.log("\007");
+						//key wieder freigeben
+						//entfernen der ID über PlayerID
+						if(idSocketid.has(key))idSocketid.delete(key);
+					}else{
+						io.sockets.connected[key].emit('startchat', {});
+					}
+				});
+			}
 		}else{
 			socket.emit('rejoinstatus', {gruen: gruen,gelb:gelb,groupsize:groupsize});
 		}
