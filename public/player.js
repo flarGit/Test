@@ -61,9 +61,9 @@ $(document).ready(function(){
 	
 	socket.on('waitstart', function (data) {
 		document.getElementById("wait").style.display = "";
-		$('#waitme').append('Wilkommen '+data.name+'<br>Bitte warten sie noch bis alle anderen Teilnehmer ('+data.groupsize+') bereit sind:');
+		$('#waitme').append('welcome '+data.name+'<br>Please wait until all other participants ('+data.groupsize+') to be ready:');
 		for (i = 0; i < data.groupsize; i++) { 
-			$('#waitother').append('<font color="#FF0000">Player '+ (i+1) +'</font><br>');
+			$('#waitother').append('<font color="#FF0000">player '+ (i+1) +'</font><br>');
 		}
 		tickenforwaitONOFF = true;
 		tickenforwait();
@@ -99,13 +99,13 @@ $(document).ready(function(){
 	}
 	
 	function waitbereit(){
-		if(document.getElementById("waitbereit").value === "bereit"){
-			document.getElementById("waitbereit").value = "nicht mehr bereit";
+		if(document.getElementById("waitbereit").value === "ready"){
+			document.getElementById("waitbereit").value = "not ready anymore";
 			socket.emit('joinstatusgruen',{name:name});
 			
 		}
-		else if(document.getElementById("waitbereit").value === "nicht mehr bereit"){
-			document.getElementById("waitbereit").value = "bereit";
+		else if(document.getElementById("waitbereit").value === "not ready anymore"){
+			document.getElementById("waitbereit").value = "ready";
 			socket.emit('joinstatusgelb',{name:name});
 		}
 		socket.emit('joinstatus',{name:name});
