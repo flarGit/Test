@@ -33,9 +33,6 @@ header{
     max-height: 1000px;
     overflow: hidden;
 }
-#wait{
-	font-size:20px;
-}
 #chattextinput{
 	border: 2px solid; 
 	padding: 5px;
