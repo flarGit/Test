@@ -43,7 +43,7 @@ header{
 	min-height:15vh;
 	max-height:15vh;
 	resize: none;
-	font-size:20px;
+	font-size:120%;
 }
 #chattextform{
 	position: relative;
@@ -69,5 +69,5 @@ header{
 	font-size:20px;
 }
 #wait{
-	font-size:20px;
+	font-size:150%;
 }
