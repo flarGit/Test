@@ -1,48 +1,33 @@
 $(document).ready(function(){
 	var name = "";
-
+	var pw = "";
+	
 	// WebSocket
 	var socket = io.connect();
 	socket.on('connect', function () {
+		//?id=user?pw=pw?temppw=
 		var temp = location.search.split('?id=')[1];
-		var myName = temp.split('?key=')[0];
-		var key  = temp.split('?key=')[1];
+		var myName = temp.split('?pw=')[0];
+		temp  = temp.split('?pw=')[1];
+		var mypw = temp.split('?temppw=')[0];
+		pw = mypw;
+		var tempPW = temp.split('?temppw=')[1];
 		name = myName;
-		socket.emit('join', {name:myName,key:key});
+		socket.emit('join', {name:myName,pw:pw,tempPW:tempPW});
 	});
 	
 	window.onload = function () {
 		document.getElementById("javaskriptfehler").style.display = "none";
 		document.getElementById("loadingsite").style.display = "none";
-		document.getElementById("myName").style.display = "none";
 		document.getElementById("mychat").style.display = "none";
 		
 	}
-//20180717 Nachricht von user to user
-	/*function sendenChatctoc(){
-		// Eingabefelder auslesen
-		var text = $('#chattestctoc').val();
-		// Socket senden
-		socket.emit('chatctoc', {id: "1", name: name, text: text });
-		// Text-Eingabe leeren
-		$('#chattestctoc').val('');
-	}
-//20180717 neue Nachricht CtoC
-	socket.on('awchatctoc', function (data) {
-		var zeit = new Date(data.zeit);
-		$('#chatctoc').append(
-			//'<img id="B' + data.name + '" alt="" height="100" src="B'+ data.name +'.jpg" width="100">' +
-			'<div id="chatctocname" name="chatctocname">'+ data.name + '</div>' +
-			'<div id="chatctocin" name="chatctocin">'+ data.text + '</div>'
-		);
-	});*/	
-	
-	//20180717 Nachricht von user to user
+
 	function chatnachrichtsenden(){
 		// Eingabefelder auslesen
 		var text = $('#chattextinput').val();
 		// Socket senden
-		socket.emit('chatnachricht',{name: name, text: text });
+		socket.emit('chatnachricht',{name: name,pw:pw, text: text });
 		// Text-Eingabe leeren
 		$('#chattextinput').val('');
 	}
@@ -88,33 +73,24 @@ $(document).ready(function(){
 	});
 	
 	socket.on('logout', function (data) {
-		location.replace('/logout');
+		//location.replace('/logout');
 	});
-	
-	function sendenkeyname(){
-		name = $('#playerNameeingabe').val();
-		socket.emit('chatctoc', {id: "1", name: name, text: name + " ist dem chat beigetreten" });
-		document.getElementById("myName").style.display = "none"
-		document.getElementById("mychat").style.display = ""
-	}
 	
 	function waitbereit(){
 		if(document.getElementById("waitbereit").value === "ready"){
 			document.getElementById("waitbereit").value = "not ready anymore";
-			socket.emit('joinstatusgruen',{name:name});
+			socket.emit('joinstatusgruen',{name:name,pw:pw});
 			
 		}
 		else if(document.getElementById("waitbereit").value === "not ready anymore"){
 			document.getElementById("waitbereit").value = "ready";
-			socket.emit('joinstatusgelb',{name:name});
+			socket.emit('joinstatusgelb',{name:name,pw:pw});
 		}
-		socket.emit('joinstatus',{name:name});
+		socket.emit('joinstatus',{name:name,pw:pw});
 	}
 	// bei einem Klick auf senden
 	$('#chatnachrichtsendenkey').click(chatnachrichtsenden);
-	$('#sendenkeyname').click(sendenkeyname);
 	$('#waitbereit').click(waitbereit);
-
 	
 	var timeinterval = 3000;
 	var tickenforwaitONOFF = false;
@@ -127,6 +103,6 @@ $(document).ready(function(){
 	}
 	
 	function joinstatusstart(){
-		socket.emit('joinstatus',{name:name});
+		socket.emit('joinstatus',{name:name,pw:pw});
 	}
 });

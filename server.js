@@ -1,8 +1,9 @@
 var debug = true;
 
 var groupsize = 2;
-var idcheck = new Map();
-var nametoGroup = new Map();
+var idcheck = new Map();  //pw / randpw
+var pwtoGroup = new Map();
+var pwtoName = new Map();
 var groupGelb = new Map();
 var groupGruen = new Map();
 var grouptoActive = new Map();		// 0 = start 1=warten 2 = läuft 3 = timeout
@@ -40,21 +41,22 @@ app.get('/', function (req, res) {
 app.post('/login', function (req, res) {
     var user = req.body.username,
     pw = req.body.password;
-    if (user === 'u1' && pw === 'test') {
-		nametoGroup.set(user,"G1");
+    if (user === 'u1' && pw === 'test1') {
+		pwtoGroup.set(pw,"G1");
         req.session.user = 'u1';
-    } else if (user === 'u2' && pw === 'test') {
-		nametoGroup.set(user,"G1");
+    } else if (user === 'u2' && pw === 'test2') {
+		pwtoGroup.set(pw,"G1");
 		req.session.user = 'u2';
-    } else if (user === 'u3' && pw === 'test') {
-		nametoGroup.set(user,"G2");
+    } else if (user === 'u3' && pw === 'test3') {
+		pwtoGroup.set(pw,"G2");
 		req.session.user = 'u3';
-    } else if (user === 'u4' && pw === 'test') {
-		nametoGroup.set(user,"G2");
+    } else if (user === 'u4' && pw === 'test4') {
+		pwtoGroup.set(pw,"G2");
 		req.session.user = 'u4';
     }
-	idcheck.set(user,rand(100000,999999))
-    res.redirect('/player'+'?id='+user+'?key='+idcheck.get(user));
+	idcheck.set(pw,rand(100000,999999));
+	pwtoName.set(pw,user);
+    res.redirect('/player'+'?id='+user+'?pw='+pw+'?temppw='+idcheck.get(pw));
 });
 
 app.get('/player', checkAuth, function (req, res) {
@@ -96,13 +98,14 @@ var io = require('socket.io').listen(server);
 var connections = {};
 var connectionsfull = {};
 
-function getName (connections, socket) {
-    var name;
+function getPW (connections, socket) {
+    var pw;
     for (var key in connections) {
         if (socket === connections[key]) {
-            name = key; }
+            pw = key; 
+		}
     }
-    return name;
+    return pw;
 }
 
 io.sockets.on('connection', function (socket) {
@@ -111,8 +114,9 @@ io.sockets.on('connection', function (socket) {
 	
 	socket.on('chatnachricht', function (data) {
 		// und an mich selbst, wieder zurück das ich ihn auch sehe
-		var name = getName(connections, socket.id);
-		var group = nametoGroup.get(name);
+		var pw = getPW(connections, socket.id);
+		var group = pwtoGroup.get(pw);
+		var name = pwtoName.get(pw);
 		var idSocketid = new Map();
 		idSocketid = groupGruen.get(group);
 		if(typeof idSocketid !== "undefined"){
@@ -126,7 +130,6 @@ io.sockets.on('connection', function (socket) {
 					if(idSocketid.has(key))idSocketid.delete(key);
 				}else{
 					io.sockets.connected[key].emit('awchatnachricht', { zeit: new Date(), text: data.text,name: name});
-
 				}
 			});
 		}
@@ -134,16 +137,16 @@ io.sockets.on('connection', function (socket) {
 	});
 	
 	socket.on('join', function(data) {
-		if(data.key == idcheck.get(data.name)){
-			connections[data.name] = socket.id;
-			connectionsfull[data.name] = socket;
+		if(data.tempPW == idcheck.get(data.pw)){
+			connections[data.pw] = socket.id;
+			connectionsfull[data.pw] = socket;
 			socket.emit('waitstart', {name: data.name,groupsize:groupsize});
 			var temp = new Map();
-			temp = groupGelb.get(nametoGroup.get(data.name));
+			temp = groupGelb.get(pwtoGroup.get(data.pw));
 			if(typeof temp === "undefined"){
 				temp = new Map();
 				temp.set(socket.id,socket.id);
-				groupGelb.set(nametoGroup.get(data.name),temp);
+				groupGelb.set(pwtoGroup.get(data.pw),temp);
 			}else{
 				temp.set(socket.id,socket.id);
 			}
@@ -160,7 +163,7 @@ io.sockets.on('connection', function (socket) {
 		var gelb = 0;
 		
 		var idSocketid = new Map();
-		idSocketid = groupGelb.get(nametoGroup.get(data.name));
+		idSocketid = groupGelb.get(pwtoGroup.get(data.pw));
 		if(typeof idSocketid !== "undefined"){
 				idSocketid.forEach(function(value, key) {
 					if(typeof io.sockets.connected[value] === "undefined"){
@@ -174,7 +177,7 @@ io.sockets.on('connection', function (socket) {
 			gelb = idSocketid.size;
 		}
 		
-		idSocketid = groupGruen.get(nametoGroup.get(data.name));
+		idSocketid = groupGruen.get(pwtoGroup.get(data.pw));
 		if(typeof idSocketid !== "undefined"){
 			idSocketid.forEach(function(value, key) {
 				if(typeof io.sockets.connected[value] === "undefined"){
@@ -191,8 +194,9 @@ io.sockets.on('connection', function (socket) {
 		}
 		if(gruen == groupsize){
 			//alle starten gleichzeitig und prüfen ob sie noch da sind
-			console.log('Die group '+ nametoGroup.get(data.name) + ' startet jetzt');
-			var group = nametoGroup.get(data.name);
+			console.log('Die group '+ data.pw + ' startet jetzt');
+			console.log('Die group '+ pwtoGroup.get(data.pw) + ' startet jetzt');
+			var group = pwtoGroup.get(data.pw);
 			var idSocketid = new Map();
 			idSocketid = groupGruen.get(group);
 			if(typeof idSocketid !== "undefined"){
@@ -216,36 +220,36 @@ io.sockets.on('connection', function (socket) {
 	
 	socket.on('joinstatusgruen', function(data) {
 		var idSocketid = new Map();
-		idSocketid = groupGelb.get(nametoGroup.get(data.name));
+		idSocketid = groupGelb.get(pwtoGroup.get(data.pw));
 		if(typeof idSocketid !== "undefined"){
-			idSocketid = groupGelb.get(nametoGroup.get(data.name));
+			idSocketid = groupGelb.get(pwtoGroup.get(data.pw));
 			idSocketid.delete(socket.id);
 		}
 		
 		var temp = new Map();
-		temp = groupGruen.get(nametoGroup.get(data.name));
+		temp = groupGruen.get(pwtoGroup.get(data.pw));
 		if(typeof temp === "undefined"){
 			temp = new Map();
 			temp.set(socket.id,socket.id);
-			groupGruen.set(nametoGroup.get(data.name),temp);
+			groupGruen.set(pwtoGroup.get(data.pw),temp);
 		}else{
 			temp.set(socket.id,socket.id);
 		}
 	});
 	socket.on('joinstatusgelb', function(data) {
 		var idSocketid = new Map();
-		idSocketid = groupGruen.get(nametoGroup.get(data.name));
+		idSocketid = groupGruen.get(pwtoGroup.get(data.pw));
 		if(typeof idSocketid !== "undefined"){
-			idSocketid = groupGruen.get(nametoGroup.get(data.name));
+			idSocketid = groupGruen.get(pwtoGroup.get(data.pw));
 			idSocketid.delete(socket.id);
 		}
 		
 		var temp = new Map();
-		temp = groupGelb.get(nametoGroup.get(data.name));
+		temp = groupGelb.get(pwtoGroup.get(data.pw));
 		if(typeof temp === "undefined"){
 			temp = new Map();
 			temp.set(socket.id,socket.id);
-			groupGelb.set(nametoGroup.get(data.name),temp);
+			groupGelb.set(pwtoGroup.get(data.pw),temp);
 		}else{
 			temp.set(socket.id,socket.id);
 		}

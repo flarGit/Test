@@ -53,7 +53,7 @@ footer{
 	background-color: WhiteSmoke;
 	border: 1px solid; 
 	max-height:600px;
-	
+	min-height:600px;
 	max-width:830px;
 	min-width:830px;
 	overflow: scroll;
