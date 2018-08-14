@@ -70,6 +70,7 @@ $(document).ready(function(){
 		tickenforwaitONOFF = false;
 		document.getElementById("wait").style.display = "none";
 		document.getElementById("mychat").style.display = "";
+		mytime();
 	});
 	
 	socket.on('logout', function (data) {
@@ -99,6 +100,21 @@ $(document).ready(function(){
 			//console.log("Hallo Tick");
 			joinstatusstart();
 			window.setTimeout(tickenforwait, timeinterval);
+		}
+	}
+	
+	var vartime = 120;
+	function mytime(){
+		if(vartime > 0){
+			//console.log("Hallo Tick");
+			vartime = vartime - 1;
+			$('#time').empty();
+			if(vartime > 30){
+				$('#time').append(vartime + ' seconds left');
+			}else{
+				$('#time').append('<font color="#FF0000">'+vartime + ' seconds left </font>');
+			}
+			window.setTimeout(mytime, 1000);
 		}
 	}
 	
