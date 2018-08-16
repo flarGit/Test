@@ -1,19 +1,18 @@
 $(document).ready(function(){
 	var name = "";
 	var pw = "";
+	var tempPW = "";
 	
 	// WebSocket
 	var socket = io.connect();
 	socket.on('connect', function () {
-		//?id=user?pw=pw?temppw=
-		var temp = location.search.split('?id=')[1];
-		var myName = temp.split('?pw=')[0];
-		temp  = temp.split('?pw=')[1];
+		//?pw=pw?temppw=
+		var temp = location.search.split('?pw=')[1];
 		var mypw = temp.split('?temppw=')[0];
 		pw = mypw;
-		var tempPW = temp.split('?temppw=')[1];
-		name = myName;
-		socket.emit('join', {name:myName,pw:pw,tempPW:tempPW});
+		var mytempPW = temp.split('?temppw=')[1];
+		tempPW = mytempPW;
+		socket.emit('join', {pw:pw,tempPW:tempPW});
 	});
 	
 	window.onload = function () {
@@ -33,10 +32,15 @@ $(document).ready(function(){
 	}
 	socket.on('awchatnachricht', function (data) {
 		var zeit = new Date(data.zeit);
-		$('#chattextform').append(
-			//'<img id="B' + data.name + '" alt="" height="100" src="B'+ data.name +'.jpg" width="100">' +
-			'<div id="chattext" name="chattext">'+data.name+':<br>'+ data.text + '</div>'
-		);
+		if(name == data.name){
+			$('#chattextform').append(
+				'<div id="chattext" name="chattext">You:<br>'+ data.text + '</div>'
+			);
+		}else{
+			$('#chattextform').append(
+				'<div id="chattext" name="chattext">Player'+data.name+':<br>'+ data.text + '</div>'
+			)
+		}
 		//scroll down
 		if(document.getElementById("autoscroll").checked){
 			document.getElementById("chattextform").scrollTop = 10000;
@@ -45,36 +49,70 @@ $(document).ready(function(){
 	
 	
 	socket.on('waitstart', function (data) {
+		vartime = data.chatTime;
 		document.getElementById("wait").style.display = "";
-		$('#waitme').append('welcome '+data.name+'<br>Please wait until all other participants ('+data.groupsize+') to be ready:');
+		$('#waitme').empty();
+		$('#waitme').append('welcome <br>Please wait until all other participants ('+data.groupsize+') to be ready:');
 		for (i = 0; i < data.groupsize; i++) { 
 			$('#waitother').append('<font color="#FF0000">player '+ (i+1) +'</font><br>');
 		}
 		tickenforwaitONOFF = true;
 		tickenforwait();
 	});	
+	
+	//falls die gruppe gekillt wird
+	socket.on('rejoin', function (data) {
+		//neu verbinden nach 2 sekunden
+		window.setTimeout(rejoin, 2000);
+	});
+	function rejoin(){
+		socket.emit('join', {pw:pw,tempPW:tempPW});
+		if(document.getElementById("waitbereit").value === "not ready anymore"){
+			socket.emit('joinstatusgruen',{name:name,pw:pw});
+		}
+	}
+	
 	socket.on('rejoinstatus', function (data) {
 		$('#waitother').empty();
-		
 		for (i = 0; i < data.groupsize; i++) {
 			if(data.gruen > i){
-				$('#waitother').append('<font color="#00C000">Player '+ (i+1) +'</font><br>');
+				$('#waitother').append('<font color="#00C000">'+ (i+1) +' Player</font><br>');
 			}else if(data.gelb + data.gruen > i){
-				$('#waitother').append('<font color="#DBA901">Player '+ (i+1) +'</font><br>');
+				$('#waitother').append('<font color="#DBA901">'+ (i+1) +' Player</font><br>');
 			}else{
-				$('#waitother').append('<font color="#FF0000">Player '+ (i+1) +'</font><br>');
+				$('#waitother').append('<font color="#FF0000">'+ (i+1) +' Player</font><br>');
 			}
 		}
 	});
 	socket.on('startchat', function (data) {
 		tickenforwaitONOFF = false;
+		name = data.name;
 		document.getElementById("wait").style.display = "none";
 		document.getElementById("mychat").style.display = "";
 		mytime();
 	});
+	//für reconnecht mit restzeitsetzen
+	socket.on('startchatre', function (data) {
+		vartime = data.chatTime;
+		tickenforwaitONOFF = false;
+		name = data.name;
+		document.getElementById("wait").style.display = "none";
+		document.getElementById("mychat").style.display = "";
+		vartime = vartime - (Math.round((new Date().getTime() - data.date)/1000));
+		//das nichts negatives angezeigt wird
+		if(vartime < 0){
+			vartime = 1;
+		}
+		mytime();
+	});
+	
+	
 	
 	socket.on('logout', function (data) {
 		//location.replace('/logout');
+	});
+	socket.on('ende', function (data) {
+		location.replace('/ende?link=' + data.mylink);
 	});
 	
 	function waitbereit(){
@@ -112,7 +150,7 @@ $(document).ready(function(){
 			if(vartime > 30){
 				$('#time').append(vartime + ' seconds left');
 			}else{
-				$('#time').append('<font color="#FF0000">'+vartime + ' seconds left </font>');
+				$('#time').append('<font color="#FF0000">'+ vartime +' seconds left </font>');
 			}
 			window.setTimeout(mytime, 1000);
 		}
