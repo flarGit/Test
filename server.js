@@ -179,7 +179,7 @@ io.sockets.on('connection', function (socket) {
 					temp = groupGruen.get(pwtoGroup.get(pw));
 					temp.set(socket.id,socket.id);
 					groupGruen.set(pwtoGroup.get(pw),temp);
-					socket.emit('startchatre', {name:pwtoName.get(pw),date: startChatDate.get(pw),chatTime: chatTime});
+					socket.emit('startchatre', {name:pwtoName.get(pw),date: startChatDate.get(pw),serverdatenow: new Date().getTime(),chatTime: chatTime});
 				}
 				if(grouptoActive.get(pwtoGroup.get(pw)) == 3){
 					socket.emit('ende', {mylink:pwtoURL.get(pw)});
