@@ -98,7 +98,7 @@ $(document).ready(function(){
 		name = data.name;
 		document.getElementById("wait").style.display = "none";
 		document.getElementById("mychat").style.display = "";
-		vartime = vartime - (Math.round((new Date().getTime() - data.date)/1000));
+		vartime = vartime - (Math.round((data.serverdatenow - data.date)/1000));
 		//das nichts negatives angezeigt wird
 		if(vartime < 0){
 			vartime = 1;
