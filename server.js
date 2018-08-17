@@ -174,7 +174,7 @@ io.sockets.on('connection', function (socket) {
 //prüfen ob die gruppe noch aktive ist oder schon tod ist
 				//starte chat falls gruppe noch aktive
 				if(grouptoActive.get(pwtoGroup.get(pw)) == 2){
-					temp = new Map();
+					temp = groupGruen.get(pwtoGroup.get(pw));
 					temp.set(socket.id,socket.id);
 					groupGruen.set(pwtoGroup.get(pw),temp);
 					socket.emit('startchatre', {name:pwtoName.get(pw),date: startChatDate.get(pw),chatTime: chatTime});
@@ -239,6 +239,9 @@ io.sockets.on('connection', function (socket) {
 				if(typeof idSocketid !== "undefined"){
 					grouptoActive.set(pwtoGroup.get(data.pw),2);
 					var name = 1;
+					setTimeout(function() {
+						mytimeout(group);
+					}, chatTime * 1000);
 					idSocketid.forEach(function(value, key) {
 						if(typeof io.sockets.connected[value] === "undefined"){
 						}else{
@@ -246,9 +249,6 @@ io.sockets.on('connection', function (socket) {
 							pwtoName.set(socketidtopw.get(key),name);
 							startChatDate.set(socketidtopw.get(key),new Date().getTime());
 							name = name + 1;
-							setTimeout(function() {
-								mytimeout(group);
-							}, chatTime * 1000);
 						}
 					});
 				}
