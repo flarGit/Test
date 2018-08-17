@@ -47,7 +47,7 @@ header{
 	border: 1px solid; 
 	min-height:65vh;
 	max-height:65vh;
-	min-width:90%;
+	min-width:95%;
 	overflow: scroll;
 	overflow-x: hidden;
 }

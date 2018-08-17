@@ -51,7 +51,9 @@ app.get('/', function (req, res) {
 
 app.post('/login', function (req, res) {
     var pw = req.body.password;
-    if (pw === 'test1') {
+	req.session.user = pw;
+	pwtoURL.set(pw,"hallo"+pw);
+    /*if (pw === 'test1') {
         req.session.user = pw;
 		pwtoURL.set(pw,"hallo1");
     } else if (pw === 'test2') {
@@ -63,7 +65,7 @@ app.post('/login', function (req, res) {
     } else if (pw === 'test4') {
 		req.session.user = pw;
 		pwtoURL.set(pw,"hallo4");
-    }
+    }*/
 	idcheck.set(pw,rand(100000,999999));
     res.redirect('/player'+'?pw='+pw+'?temppw='+idcheck.get(pw));
 });
