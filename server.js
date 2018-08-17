@@ -1,6 +1,6 @@
 var debug = true;
 
-var chatTime = 50;
+var chatTime = 120;
 var groupsize = 3;
 
 var playercountname = 1;
