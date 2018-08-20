@@ -82,21 +82,11 @@ app.get('/ende', function (req, res) {
 
 //kann eigendlich weg echzeit überwachung :)
 app.get('/logout', function (req, res) {
-    var names = Object.keys(connectionsfull);
-
-    names.splice(names.indexOf(req.session.user), 1);
-
-    var msg = '{"names": ["' + names.join('","') + '"]}';
-
-    connectionsfull[req.session.user].broadcast.emit('join', msg);
-
-    connectionsfull[req.session.user].disconnect();
+	connectionsfull[req.session.user].disconnect();
     delete connectionsfull[req.session.user];
-
     delete req.session.user;
-
     res.redirect('/');
-	console.log('tschussssssss');
+	console.log('user logout');
 });
 
 //funktionen----------------------------------------------------------------

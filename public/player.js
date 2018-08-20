@@ -109,7 +109,7 @@ $(document).ready(function(){
 	
 	
 	socket.on('logout', function (data) {
-		//location.replace('/logout');
+		location.replace('/logout');
 	});
 	socket.on('ende', function (data) {
 		location.replace('/ende?link=' + data.mylink);
