@@ -211,7 +211,8 @@ io.sockets.on('connection', function (socket) {
 			});
 			gruen = idSocketid.size;
 		}
-		if(gruen == groupsize){
+//in git geändert zusätlicher schutz das es max einmal startet für timer		
+		if(gruen == groupsize && grouptoActive.get(group) == 1){
 			//alle starten gleichzeitig und prüfen ob sie noch da sind
 			console.log(new Date() + ' Die group '+ pwtoGroup.get(data.pw) + ' startet jetzt');
 			var idSocketid = new Map();
@@ -246,7 +247,7 @@ io.sockets.on('connection', function (socket) {
 				}
 			}
 		}else{
-			socket.emit('rejoinstatus', {gruen: gruen,gelb:gelb,groupsize:groupsize});
+			socket.emit('rejoinstatus', {gruen: gruen,gelb: gelb,groupsize: groupsize});
 		}
 		if(abbruch){
 			//kill der gruppe neueinwahl der verbleibenden
