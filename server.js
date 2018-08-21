@@ -76,6 +76,10 @@ app.get('/player', checkAuth, function (req, res) {
 	res.sendfile(__dirname + '/public/player.html', {user: req.session.user});
 });
 
+app.get('/inaktiv', function (req, res) {
+	res.sendfile(__dirname + '/public/inaktiv.html');
+});
+
 app.get('/ende', function (req, res) {
 	res.sendfile(__dirname + '/public/ende.html');
 });
@@ -211,7 +215,7 @@ io.sockets.on('connection', function (socket) {
 			});
 			gruen = idSocketid.size;
 		}
-//in git geändert zusätlicher schutz das es max einmal startet für timer		
+		//zusätlicher schutz das es max einmal startet für timer		
 		if(gruen == groupsize && grouptoActive.get(group) == 1){
 			//alle starten gleichzeitig und prüfen ob sie noch da sind
 			console.log(new Date() + ' Die group '+ pwtoGroup.get(data.pw) + ' startet jetzt');
@@ -227,7 +231,8 @@ io.sockets.on('connection', function (socket) {
 				});
 			}
 			if(abbruch){
-//kill der gruppe neueinwahl der verbleibenden
+			//kill der gruppe neueinwahl der verbleibenden wird am ende auch ausgeführt falls aktiv
+			
 			}else{
 				if(typeof idSocketid !== "undefined"){
 					grouptoActive.set(pwtoGroup.get(data.pw),2);
@@ -341,7 +346,6 @@ io.sockets.on('connection', function (socket) {
 		if(groupGruen.has(group))groupGruen.delete(group);
 		
 		pwtoGroup.forEach(function(value, key) {
-			console.log('Hallo '+value+' b '+key);
 			if(value == group){
 				if(typeof io.sockets.connected[pwtosocketid.get(key)] === "undefined"){
 					killsocket(key);

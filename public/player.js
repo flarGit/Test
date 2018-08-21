@@ -2,6 +2,10 @@ $(document).ready(function(){
 	var name = "";
 	var pw = "";
 	var tempPW = "";
+	//das die chat time nur einmal gestartet wird und zur prüfung ob die inaktivität egal ist
+	var ischatstart = false;
+	var redgroupsize = 1;
+	var isinaktivrun = false;
 	
 	// WebSocket
 	var socket = io.connect();
@@ -19,7 +23,6 @@ $(document).ready(function(){
 		document.getElementById("javaskriptfehler").style.display = "none";
 		document.getElementById("loadingsite").style.display = "none";
 		document.getElementById("mychat").style.display = "none";
-		
 	}
 
 	function chatnachrichtsenden(){
@@ -73,6 +76,13 @@ $(document).ready(function(){
 	}
 	
 	socket.on('rejoinstatus', function (data) {
+		redgroupsize = data.groupsize - data.gruen - data.gelb; 
+		//timer um bei inaktivität zu kicken
+		if(redgroupsize == 0 && isinaktivrun == false && (document.getElementById("waitbereit").value === "ready")){
+			isinaktivrun = true;
+			window.setTimeout(mytimeinaktiv, vartimeinaktiv);
+		}
+		
 		$('#waitother').empty();
 		for (i = 0; i < data.groupsize; i++) {
 			if(data.gruen > i){
@@ -89,7 +99,10 @@ $(document).ready(function(){
 		name = data.name;
 		document.getElementById("wait").style.display = "none";
 		document.getElementById("mychat").style.display = "";
-		mytime();
+		if(ischatstart == false){
+			ischatstart = true;
+			mytime();
+		}
 	});
 	//für reconnecht mit restzeitsetzen
 	socket.on('startchatre', function (data) {
@@ -103,7 +116,10 @@ $(document).ready(function(){
 		if(vartime < 0){
 			vartime = 1;
 		}
-		mytime();
+		if(ischatstart == false){
+			ischatstart = true;
+			mytime();
+		}
 	});
 	
 	
@@ -154,6 +170,14 @@ $(document).ready(function(){
 			}
 			window.setTimeout(mytime, 1000);
 		}
+	}
+	
+	var vartimeinaktiv = 90 * 1000;
+	function mytimeinaktiv(){
+		if(ischatstart == false && redgroupsize == 0 && (document.getElementById("waitbereit").value === "ready")){
+			location.replace('/inaktiv?key=' + pw);
+		}
+		isinaktivrun = false;
 	}
 	
 	function joinstatusstart(){
