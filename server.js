@@ -18,10 +18,10 @@ var groupGruen = new Map();			//key = groupname   value = map(socket.id,socket.i
 var grouptoActive = new Map();		// 0 = start 1=warten 2 = läuft 3 = timeout 4 = kill
 var startChatDate = new Map();		//zeit wann der caht gestartet wurde key = pw    value = Date
 
-var fs = require('fs');
+/*var fs = require('fs');
 var conf = require('./config.json');
 var freekeys = new Set(conf.freekeys);
-var servermessage = "";
+*/var servermessage = "";
 var chatmessage = "";	
 
 var express = require('express');
@@ -106,25 +106,25 @@ function rand (min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 //speichern in datei
-function saveFile(filename, savedata){
+/*function saveFile(filename, savedata){
 	return new Promise(function(resolve, reject){
 		fs.appendFile(__dirname + '/save/'+filename+'.txt', savedata, function (err) {
 		if (err) 
 			return console.log(err);
 		});
 	});
-}
+}*/
 function saveFileTimer(){
 	if(servermessage.length > 0){
 		var tempservermessage = servermessage;
 		servermessage = "";
-		saveFile('servermessage', tempservermessage);
+//		saveFile('servermessage', tempservermessage);
 		console.log('\u001B[36m' + new Date() + 'save servermessage' + '\u001b[0m');
 	}
 	if(chatmessage.length > 0){
 		var tempchatmessage = chatmessage;
 		chatmessage = "";
-		saveFile('chatmessage', tempchatmessage);
+//		saveFile('chatmessage', tempchatmessage);
 		console.log('\u001B[36m' + new Date() + 'save chatmessage' + '\u001b[0m');
 	}
 	setTimeout(function() {
