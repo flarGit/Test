@@ -8,10 +8,16 @@
 		<script src="socket.io/socket.io.js"></script>
 	</head>
 	
-		
-		
+		<form id="loadingsite" name="loadingsite" method="post">
+			Please Wait - Loading progress
+		</form>
+		<form id="javaskriptfehler" name="javaskriptfehler" style="display: none;" method="post">
+			There is a bug in the java script, for more information they switch to the developer mode of their browser.<p>Chrome<br>From the menu, select tools.<br>From tools, choose developer tools.<br>Finally, select Console.<br>shortcut ctrl+shift+j</p><p>Firefox<br>From the menu, select developer tools<br>shortcut ctrl+shift+k</p>
+		</form>
 		<script>
-			function load() {			
+			function load() {
+				document.getElementById('loadingsite').style.display = "none";
+				document.getElementById('javaskriptfehler').style.display = "none";
 				//suchen ob die daten in der url sind wenn ja abschicken
 				var temp = location.search;
 				if(temp.indexOf("?key=") != -1){
@@ -22,7 +28,7 @@
 			}
 			window.onload = load;
 		</script>
-	<form id="login" name="login" action="login" style="display: none;" method="post">	
+	<form id="login" name="login" action="login" method="post">	
             <div>
                 <label for="password">Password</label>
                 <input type="password", name="password", id="password">
@@ -31,13 +37,3 @@
                 <input type="submit",name="submitBT", id="submitBT", value="Log in">
 			</div>
 	</form>	
-	
-	<span id="htmltesttext" name="htmltesttext">Please update your browser or switch to a recent Chrome, Firefox bowser.<br>JavaScript must be enabled to run the experiment.</span>
-	<script>
-			var i = document.createElement("input");
-			i.setAttribute("type","color");
-			if(i.type !== "text"){
-				document.getElementById('htmltesttext').style.display = "none";
-				document.getElementById('login').style.display = "";
-			}
-	</script>
