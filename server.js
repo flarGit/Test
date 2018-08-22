@@ -18,6 +18,11 @@ var groupGruen = new Map();			//key = groupname   value = map(socket.id,socket.i
 var grouptoActive = new Map();		// 0 = start 1=warten 2 = läuft 3 = timeout 4 = kill
 var startChatDate = new Map();		//zeit wann der caht gestartet wurde key = pw    value = Date
 
+var fs = require('fs');
+var conf = require('./config.json');
+var freekeys = new Set(conf.freekeys);
+var servermessage = "";
+var chatmessage = "";	
 
 var express = require('express');
 var app = express();
@@ -46,6 +51,7 @@ function checkAuth(req, res, next) {
 
 app.get('/', function (req, res) {
 	console.log('Anfrage:'+new Date()+'   '+ req.ip);
+	servermessage = servermessage + "" + new Date() + "@user Anfrage@" + req.ip + "\n";
     res.sendfile(__dirname + '/public/login.html');
 });
 
@@ -91,12 +97,39 @@ app.get('/logout', function (req, res) {
     delete req.session.user;
     res.redirect('/');
 	console.log('user logout');
+	servermessage = servermessage + "" + new Date() + "@user Logout@\n";
 });
 
 //funktionen----------------------------------------------------------------
 //zufall :)
 function rand (min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+//speichern in datei
+function saveFile(filename, savedata){
+	return new Promise(function(resolve, reject){
+		fs.appendFile(__dirname + '/save/'+filename+'.txt', savedata, function (err) {
+		if (err) 
+			return console.log(err);
+		});
+	});
+}
+function saveFileTimer(){
+	if(servermessage.length > 0){
+		var tempservermessage = servermessage;
+		servermessage = "";
+		saveFile('servermessage', tempservermessage);
+		console.log('\u001B[36m' + new Date() + 'save servermessage' + '\u001b[0m');
+	}
+	if(chatmessage.length > 0){
+		var tempchatmessage = chatmessage;
+		chatmessage = "";
+		saveFile('chatmessage', tempchatmessage);
+		console.log('\u001B[36m' + new Date() + 'save chatmessage' + '\u001b[0m');
+	}
+	setTimeout(function() {
+		saveFileTimer();
+	}, 180 * 1000);
 }
 //--------------------------------------------------------------------------
 
@@ -111,7 +144,8 @@ var connectionsfull = {};
 
 io.sockets.on('connection', function (socket) {
     // der Client ist verbunden
-	if (debug) console.log('Verbunden mit '+ socket.id);
+	console.log('Verbunden mit '+ socket.id);
+	servermessage = servermessage + "" + new Date() + "@Server Verbunden mit@" + socket.id + "\n";
 	
 	socket.on('chatnachricht', function (data) {
 		// und an mich selbst, wieder zurück das ich ihn auch sehe
@@ -129,7 +163,8 @@ io.sockets.on('connection', function (socket) {
 				}
 			});
 		}
-		console.log(new Date() + ' from:' + name + ' group:'+ group +' text:' + data.text);
+		chatmessage = chatmessage + "" + new Date() + "@message" + "@from@" + name + "@group@" + group + "@text@" + data.text + "\n";
+		//console.log(new Date() + ' from:' + name + ' group:'+ group +' text:' + data.text);
 	});
 	
 	//erstes hallo und reconnect
@@ -167,7 +202,12 @@ io.sockets.on('connection', function (socket) {
 					temp.set(socket.id,socket.id);
 				}
 			}else{
-//prüfen ob die gruppe noch aktive ist oder schon tod ist
+				//prüfen ob die gruppe noch aktive ist oder schon tod ist
+				//falls die gruppe noch im waiting screen ist
+				if(grouptoActive.get(pwtoGroup.get(pw)) == 1){
+					console.log('blablabla hab ich dich' + pwtoGroup.get(pw));
+					killgroup(pwtoGroup.get(pw));
+				}
 				//starte chat falls gruppe noch aktive
 				if(grouptoActive.get(pwtoGroup.get(pw)) == 2){
 					temp = groupGruen.get(pwtoGroup.get(pw));
@@ -181,6 +221,7 @@ io.sockets.on('connection', function (socket) {
 			}
 		}else{
 			console.log('da hat jemand was an der URL geaendert --> logout');
+			servermessage = servermessage + "" + new Date() + "@da hat jemand was an der URL geaendert --> logout@" + "\n";
 			socket.emit('logout', {});
 		}
 		//io.sockets.emit('awchatctoc', { zeit: new Date(), text: data.name + ' ist dem chat beigetreten',name: 'SYSTEM'});
@@ -219,6 +260,8 @@ io.sockets.on('connection', function (socket) {
 		if(gruen == groupsize && grouptoActive.get(group) == 1){
 			//alle starten gleichzeitig und prüfen ob sie noch da sind
 			console.log(new Date() + ' Die group '+ pwtoGroup.get(data.pw) + ' startet jetzt');
+			chatmessage = chatmessage + "" + new Date() + "@start@" + "@group@" + pwtoGroup.get(data.pw) + "\n";
+			servermessage = servermessage + "" + new Date() + "@start@" + "@group@" + pwtoGroup.get(data.pw) + "\n";
 			var idSocketid = new Map();
 			idSocketid = groupGruen.get(group);
 			
@@ -302,6 +345,8 @@ io.sockets.on('connection', function (socket) {
 	//timer für das ende der Group
 	function mytimeout(group) {
 		console.log(new Date() + 'Beende group '+ group);
+		chatmessage = chatmessage + "" + new Date() + "@close@" + "@group@" + group + "\n";
+		servermessage = servermessage + "" + new Date() + "@close@" + "@group@" + group + "\n";
 		grouptoActive.set(group,3);
 		var idSocketid = new Map();
 		idSocketid = groupGruen.get(group);
@@ -322,6 +367,7 @@ io.sockets.on('connection', function (socket) {
 		if(typeof pw !== "undefined"){
 			console.log('\u001b[31m check PlayerID '+ pw +'/'+ key + ' verloren \u001b[0m');
 			if (debug) console.log("\007");
+			servermessage = servermessage + "" + new Date() + "@check PlayerID verloren@" + "@key@" + key + "@pw@" + pw + "\n";
 			var idSocketid = new Map();
 			idSocketid = groupGruen.get(pwtoGroup.get(pw));
 			if(typeof idSocketid !== "undefined"){
@@ -340,6 +386,7 @@ io.sockets.on('connection', function (socket) {
 	function killgroup(group){
 		console.log('\u001b[31m Kill Group '+ group + '\u001b[0m');
 		if (debug) console.log("\007");
+		servermessage = servermessage + "" + new Date() + "@Kill Group@" + "@group@" + group + "\n";
 		grouptoActive.set(group,4);
 		
 		if(groupGelb.has(group))groupGelb.delete(group);
@@ -351,6 +398,7 @@ io.sockets.on('connection', function (socket) {
 					killsocket(key);
 				}else{
 					console.log('\u001b[31m PlayerID '+ key + ' wird rejoind \u001b[0m');
+					servermessage = servermessage + "" + new Date() + "@to rejoind@" + "@key@" + key + "\n";
 					io.sockets.connected[pwtosocketid.get(key)].emit('rejoin', {});
 				}
 				pwtoGroup.delete(key);
@@ -364,6 +412,8 @@ io.sockets.on('connection', function (socket) {
 
 
 // Portnummer in die Konsole schreiben
-console.log('Der Server läuft nun');
+console.log('' + new Date() + 'Der Server läuft nun');
+servermessage = servermessage + "" + new Date() + "@Der Server läuft nun@" + "\n";
 //für die erste group nach server start
 grouptoActive.set(1,1);
+saveFileTimer();

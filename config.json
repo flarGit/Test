@@ -1,7 +1,3 @@
 {
-"port": 8080,
-"https": false,
-"projektname": "WengeNode",
-"mongodb": "^2.1.16",
-"morgan": "^1.7.0"
+"freekeys": ["PlayerKey1","PlayerKey2","PlayerKey3"]
 }
